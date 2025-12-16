@@ -1,17 +1,22 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import BetTypes from '@/components/BetTypes';
 
 interface LiveEventsProps {
   onAddBet: (bet: any) => void;
 }
 
 export default function LiveEvents({ onAddBet }: LiveEventsProps) {
+  const [expandedMatch, setExpandedMatch] = useState<number | null>(null);
+
   const liveMatches = [
     {
       id: 1,
       sport: 'Футбол',
+      league: 'Премьер-лига',
       team1: 'Челси',
       team2: 'Арсенал',
       score: '2:1',
@@ -22,6 +27,7 @@ export default function LiveEvents({ onAddBet }: LiveEventsProps) {
     {
       id: 2,
       sport: 'Баскетбол',
+      league: 'NBA',
       team1: 'Бруклин Нетс',
       team2: 'Бостон Селтикс',
       score: '89:92',
@@ -32,6 +38,7 @@ export default function LiveEvents({ onAddBet }: LiveEventsProps) {
     {
       id: 3,
       sport: 'Теннис',
+      league: 'ATP',
       team1: 'Рафаэль Надаль',
       team2: 'Даниил Медведев',
       score: '6:4, 3:2',
@@ -40,6 +47,10 @@ export default function LiveEvents({ onAddBet }: LiveEventsProps) {
       odds: { win1: 1.55, draw: null, win2: 2.45 }
     },
   ];
+
+  const toggleExpand = (matchId: number) => {
+    setExpandedMatch(expandedMatch === matchId ? null : matchId);
+  };
 
   return (
     <div className="space-y-4">
@@ -59,9 +70,21 @@ export default function LiveEvents({ onAddBet }: LiveEventsProps) {
                 <Badge variant="destructive" className="animate-pulse">
                   LIVE
                 </Badge>
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground">{match.sport}</div>
-                  <div className="font-bold text-primary">{match.time}</div>
+                <div className="text-right flex items-center gap-3">
+                  <div>
+                    <div className="text-xs text-muted-foreground">{match.sport}</div>
+                    <div className="font-bold text-primary">{match.time}</div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleExpand(match.id)}
+                  >
+                    <Icon 
+                      name={expandedMatch === match.id ? "ChevronUp" : "ChevronDown"} 
+                      size={20} 
+                    />
+                  </Button>
                 </div>
               </div>
 
@@ -72,7 +95,7 @@ export default function LiveEvents({ onAddBet }: LiveEventsProps) {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{match.team2}</span>
-                  <span className="text-2xl font-bold text-primary">{match.score.split(':')[1]}</span>
+                  <span className="text-2xl font-bold text-primary">{match.score.split(':')[1].split(',')[0]}</span>
                 </div>
               </div>
 
@@ -104,6 +127,10 @@ export default function LiveEvents({ onAddBet }: LiveEventsProps) {
                   <span className="font-bold text-primary">{match.odds.win2}</span>
                 </Button>
               </div>
+
+              {expandedMatch === match.id && (
+                <BetTypes match={match} onAddBet={onAddBet} />
+              )}
             </div>
           </Card>
         ))}

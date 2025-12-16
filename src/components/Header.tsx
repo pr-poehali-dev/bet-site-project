@@ -4,9 +4,11 @@ import Icon from '@/components/ui/icon';
 interface HeaderProps {
   onNavigate: (section: string) => void;
   activeSection: string;
+  onAuthClick: () => void;
+  isAuthenticated: boolean;
 }
 
-export default function Header({ onNavigate, activeSection }: HeaderProps) {
+export default function Header({ onNavigate, activeSection, onAuthClick, isAuthenticated }: HeaderProps) {
   const navItems = [
     { id: 'sport', label: 'Спорт', icon: 'Trophy' },
     { id: 'events', label: 'События', icon: 'Calendar' },
@@ -41,10 +43,22 @@ export default function Header({ onNavigate, activeSection }: HeaderProps) {
             ))}
           </nav>
 
-          <Button variant="default" size="sm" className="gap-2">
-            <Icon name="LogIn" size={16} />
-            Войти
-          </Button>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2 bg-secondary px-3 py-1.5 rounded-lg">
+                <Icon name="Wallet" size={16} className="text-primary" />
+                <span className="font-bold text-primary">12,500 ₽</span>
+              </div>
+              <Button variant="ghost" size="icon">
+                <Icon name="Bell" size={18} />
+              </Button>
+            </div>
+          ) : (
+            <Button variant="default" size="sm" className="gap-2" onClick={onAuthClick}>
+              <Icon name="LogIn" size={16} />
+              Войти
+            </Button>
+          )}
         </div>
 
         <nav className="md:hidden flex overflow-x-auto pb-3 gap-2 scrollbar-hide">

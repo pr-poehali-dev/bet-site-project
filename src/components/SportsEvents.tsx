@@ -1,13 +1,17 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
+import BetTypes from '@/components/BetTypes';
 
 interface SportsEventsProps {
   onAddBet: (bet: any) => void;
 }
 
 export default function SportsEvents({ onAddBet }: SportsEventsProps) {
+  const [expandedMatch, setExpandedMatch] = useState<number | null>(null);
+
   const sports = [
     { id: 'football', name: 'Футбол', icon: '⚽' },
     { id: 'basketball', name: 'Баскетбол', icon: '🏀' },
@@ -55,6 +59,10 @@ export default function SportsEvents({ onAddBet }: SportsEventsProps) {
     },
   ];
 
+  const toggleExpand = (matchId: number) => {
+    setExpandedMatch(expandedMatch === matchId ? null : matchId);
+  };
+
   return (
     <div className="space-y-4">
       <Tabs defaultValue="all" className="w-full">
@@ -77,7 +85,19 @@ export default function SportsEvents({ onAddBet }: SportsEventsProps) {
                     <div className="text-xs text-muted-foreground">{match.league}</div>
                     <div className="font-semibold text-primary">{match.time}</div>
                   </div>
-                  <Icon name="Star" size={20} className="text-muted-foreground hover:text-primary cursor-pointer" />
+                  <div className="flex items-center gap-2">
+                    <Icon name="Star" size={20} className="text-muted-foreground hover:text-primary cursor-pointer" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleExpand(match.id)}
+                    >
+                      <Icon 
+                        name={expandedMatch === match.id ? "ChevronUp" : "ChevronDown"} 
+                        size={20} 
+                      />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -117,6 +137,10 @@ export default function SportsEvents({ onAddBet }: SportsEventsProps) {
                     <span className="font-bold text-primary">{match.odds.win2}</span>
                   </Button>
                 </div>
+
+                {expandedMatch === match.id && (
+                  <BetTypes match={match} onAddBet={onAddBet} />
+                )}
               </div>
             </Card>
           ))}
